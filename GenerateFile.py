@@ -83,6 +83,13 @@ class SettingFile:
         self.data['DefenseMove']["Goal_HPosMaxDistBlock"] = 25.0
         self.data['DefenseMove']["Goal_OffsideMaxDistBlock"] = 25.0
 
+    def clone(self):
+        out = SettingFile()
+        for key in self.data.keys():
+            for key2 in self.data[key].keys():
+                out.data[key][key2] = self.data[key][key2]
+        return out
+
     def to_string(self):
         return f'''{{
     	"Strategy":	{{
@@ -165,6 +172,7 @@ class SettingFile:
         with open(f'{name}.json', 'w') as file:
             file.write(self.to_string())
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     test = SettingFile()
     test.write_to_file('example')
