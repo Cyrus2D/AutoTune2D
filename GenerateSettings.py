@@ -21,8 +21,8 @@ class SettingGenerator:
         self.data['Strategy']["IsGoalForward"] = [false]
 
         self.data['ChainAction'] = dict()
-        self.data['ChainAction']["ChainNodeNumber"] = [750,450]
-        self.data['ChainAction']['ChainDeph'] = [2,1]
+        self.data['ChainAction']["ChainNodeNumber"] = [1000,750,450]
+        self.data['ChainAction']['ChainDeph'] = [3,1]
         self.data['ChainAction']['UseShootSafe'] = [false]
         self.data['ChainAction']['DribblePosCountZ'] = [0.8]
         self.data['ChainAction']['DribblePosCountMaxFrontOpp'] = [8]
