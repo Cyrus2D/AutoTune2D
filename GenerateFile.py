@@ -177,4 +177,4 @@ class SettingFile:
 
 if __name__ == '__main__':
     test = SettingFile()
-    test.write_to_file('example')
+    test.write_to_file('./','example')
