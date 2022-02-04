@@ -100,4 +100,4 @@ class SettingGenerator:
 if __name__ == '__main__':
     settings = SettingGenerator().generate()
     for i in range(len(settings)):
-        settings[i].write_to_file(str(i + 1))
+        settings[i].write_to_file('./',str(i + 1))

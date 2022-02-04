@@ -168,8 +168,10 @@ class SettingFile:
     			}}
     }}'''
 
-    def write_to_file(self, name):
-        with open(f'{name}.json', 'w') as file:
+    def write_to_file(self, directory, name):
+        if directory[-1] != '/':
+            directory += '/'
+        with open(f'{directory}{name}.json', 'w') as file:
             file.write(self.to_string())
 
 
