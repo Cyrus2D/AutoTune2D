@@ -1,14 +1,24 @@
 import errno
+import os.path
 import shutil
 import subprocess
+from os import listdir
+from os.path import isfile, join
+from time import sleep
 
 import GenerateSettings
 
-SETTING_NAME = 'hel'  # name for json file
+# TODO change finish condition for each setting
+# TODO make result script, write result for each setting in file
+# TODO use CB instead of start_team
+# TODO dont use -R
+# TODO fix json name in file and write each setting
+TESTNAME = 'testp'
+SETTING_NAME = 'hel.json'  # name for json file
 TEST_OPPONENT_NAME = '2016_helios'  # used to run with AutoTest
 
-ROUND_COUNT = 1
-GAMES_PER_ROUND = 1
+ROUND_COUNT = 5
+GAMES_PER_ROUND = 3
 PORT = 60000
 
 ORIGINAL_BINARY_ADRESS = '/home/arad/robocup/cyrus/team'  # copy from this
@@ -38,10 +48,35 @@ i = 0
 possible_settings = GenerateSettings.SettingGenerator().generate()
 for setting in possible_settings:
     setting.write_to_file(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)
-    print(f"Setting {i + 1} written! press enter")
-    input()
+    setting.write_to_file(f'./out/{TESTNAME}/', str(i) + '.json')
+    print(f"Setting {i} written!")
+    test_call = subprocess.run(
+        ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
+         str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)], cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+
+    print(f"Test {i} started!")
+    # test_out_adr = f'{AUTOTEST_DIR}/out/{TESTNAME}{i}/'
+    # first_check = False
+    # while True:
+    #     onlyfiles = [f for f in listdir(test_out_adr) if isfile(join(test_out_adr, f))]
+    #     if len(onlyfiles) == 0:
+    #         if first_check:
+    #             print("Check 2")
+    #             break
+    #         print("Check 1")
+    #         first_check=True
+    #     else:
+    #         print("Games still running!")
+    #         sleep(20)
     test_result = subprocess.run(
-        ['./test.sh', '-R', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
-         str(GAMES_PER_ROUND), '-n', str(i)], cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+        ['./result.sh', '-n',TESTNAME + str(i),"-R","-N"]
+        , cwd=AUTOTEST_DIR, stdout=subprocess.PIPE
+    )
+
+    print(f"RESULTS FOR TEST {i}")
+    print("###################################")
+    res = test_result.stdout.decode('utf-8')
     print(test_result.stdout.decode('utf-8'))
+    with open(f'./out/{TESTNAME}/{i}_RESULT','w') as res_file:
+        res_file.write(res)
     i += 1
