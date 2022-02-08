@@ -1,6 +1,8 @@
 import errno
 import shutil
 import subprocess
+import signal
+import sys
 
 import GenerateSettings
 from GenerateFile import mkdir_p
@@ -25,8 +27,22 @@ AUTOTEST_DIR = '/home/arad/AutoTest2D'
 
 #######################################################################################
 
-# delete previous test binary
+
 current_running_test_name = ''
+
+
+# kill currently running test on exit
+def exit_handler(signum, frame):
+    global current_running_test_name
+    if current_running_test_name != '':
+        kill_call = subprocess.run(
+            ['./kill.sh', current_running_test_name], cwd=AUTOTEST_DIR)
+    sys.exit()
+
+
+signal.signal(signal.SIGINT, exit_handler)
+
+# delete previous test binary
 try:
     shutil.rmtree(TEST_BINARY_ADDRESS)
 except OSError as e:
