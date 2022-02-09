@@ -3,13 +3,13 @@ import re
 
 def get_winrate(text: str):
     last_segment = text.split("WinRate")[1]
-    last_segment = last_segment[:last_segment.index("%")]
+    last_segment = last_segment[1:last_segment.index("%")]
     return last_segment
 
 
 def get_expected_winrate(text: str):
     last_segment = text.split("WinRate")[2]
-    last_segment = last_segment[:last_segment.index("%")]
+    last_segment = last_segment[1:last_segment.index("%")]
     return last_segment
 
 

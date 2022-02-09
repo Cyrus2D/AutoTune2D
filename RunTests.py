@@ -12,7 +12,7 @@ from ResultParser import get_result_data
 # TODO use CB instead of start_team
 # TODO make generation more modular
 
-TESTNAME = 'testp'
+TESTNAME = 'finaltest'
 SETTING_NAME = 'hel.json'  # name for json file
 TEST_OPPONENT_NAME = '2016_helios'  # used to run with AutoTest
 
@@ -94,5 +94,5 @@ for setting in possible_settings:
     with open(f'./out/{TESTNAME}/results/RESULT_{i}', 'w') as res_file:
         res_file.write(res)
     with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
-        short_result.write(f'{i} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]}\n')
+        short_result.write(f'{i} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
     i += 1
