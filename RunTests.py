@@ -16,19 +16,23 @@ TESTNAME = 'finaltest'
 SETTING_NAME = 'hel.json'  # name for json file
 TEST_OPPONENT_NAME = '2021_helios'  # used to run with AutoTest
 
-ROUND_COUNT = 5
+ROUND_COUNT = 1
 GAMES_PER_ROUND = 5
 PORT = 60000
 
-ORIGINAL_BINARY_ADRESS = '/home/arad/robocup/cyrus/team'  # copy from this
-TEST_BINARY_ADDRESS = '../test'  # to this location, leave empty to use cb for autotest
-SETTING_SUBDIR = '/src/data/settings/'
+ORIGINAL_BINARY_ADRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
+TEST_BINARY_ADDRESS = '../test'  # to this location
+SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-
+USE_CB = True  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 #######################################################################################
 
 
 current_running_test_name = ''
+
+cb_flags = []
+if USE_CB:
+    cb_flags = ['-cb', TEST_BINARY_ADDRESS]
 
 
 # kill currently running test on exit
@@ -66,7 +70,7 @@ i = 0
 mkdir_p(f"./out/{TESTNAME}/inputs/")
 mkdir_p(f"./out/{TESTNAME}/results/")
 with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
-    short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT*GAMES_PER_ROUND}")
+    short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
 possible_settings = GenerateSettings.SettingGenerator().generate()
 
 for setting in possible_settings:
@@ -76,7 +80,7 @@ for setting in possible_settings:
     current_running_test_name = TESTNAME + str(i)
     test_call = subprocess.run(
         ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
-         str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)], cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+         str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
 
     print(f"Test {i} started!")
     test_result = subprocess.run(
