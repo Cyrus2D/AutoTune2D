@@ -14,10 +14,10 @@ from ResultParser import get_result_data
 
 TESTNAME = 'finaltest'
 SETTING_NAME = 'hel.json'  # name for json file
-TEST_OPPONENT_NAME = '2016_helios'  # used to run with AutoTest
+TEST_OPPONENT_NAME = '2021_helios'  # used to run with AutoTest
 
-ROUND_COUNT = 1
-GAMES_PER_ROUND = 1
+ROUND_COUNT = 5
+GAMES_PER_ROUND = 5
 PORT = 60000
 
 ORIGINAL_BINARY_ADRESS = '/home/arad/robocup/cyrus/team'  # copy from this
@@ -66,7 +66,7 @@ i = 0
 mkdir_p(f"./out/{TESTNAME}/inputs/")
 mkdir_p(f"./out/{TESTNAME}/results/")
 with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
-    short_result.write("")
+    short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT*GAMES_PER_ROUND}")
 possible_settings = GenerateSettings.SettingGenerator().generate()
 
 for setting in possible_settings:

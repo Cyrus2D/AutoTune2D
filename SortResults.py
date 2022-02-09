@@ -4,6 +4,8 @@ TEST_NAME = 'finaltest'
 entries = list()
 with open(f'./out/{TEST_NAME}/short_results', 'r') as result_file:
     entries = result_file.readlines()
+meta_data = entries[0].split()
+entries = entries[1:]
 for i in range(len(entries)):
     entries[i] = entries[i].split(" ")[:-1]
     entries[i] = list(map(float, entries[i]))
@@ -20,6 +22,7 @@ elif METRIC == 'winrate':
 else:
     raise Exception('Invalid metric!')
 
+print(f'Opponent name: {meta_data[0]}\nGames per test: {meta_data[1]}')
 print(f"Sorted settings based on {METRIC}:\n\n")
 print(" FILENAME  | GOAL DIFF | AVG POINTS | WINRATE | EXPECTED WINRATE")
 print('_' * 64)
