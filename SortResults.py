@@ -1,4 +1,4 @@
-METRIC = 'goal_diff'  # options are: goal_diff, avg_points, winrate , expected_winrate
+METRIC = 'winrate'  # options are: goal_diff, avg_points, winrate , expected_winrate
 TEST_NAME = 'finaltest'
 
 entries = list()

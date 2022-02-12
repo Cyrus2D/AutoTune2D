@@ -1,4 +1,4 @@
-# AutoSettings
+# AutoTuner2D
 This tool is used to find golden values for settings values. By trying out the combinations that are entered , it will return the setting file that had the best result based on AutoTest.
 # How to use
 First, input the parameters and values you want to test in GenerateSettings.py (ala the sample entry)

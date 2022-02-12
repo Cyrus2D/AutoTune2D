@@ -32,5 +32,6 @@ class SettingFile:
 
 
 if __name__ == '__main__':
-    test = SettingFile(json_handling.read_and_flatten_setting('/home/arad/robocup/cyrus/team/src/data/settings/hel.json'))
+    test = SettingFile(
+        json_handling.read_and_flatten_setting('/home/arad/robocup/cyrus/team/src/data/settings/hel.json'))
     test.write_to_file('./', 'example.json')

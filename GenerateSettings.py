@@ -8,8 +8,9 @@ class SettingGenerator:
         self.base_data = json_handling.read_and_flatten_setting(sample_file_address)
         for key in self.base_data:
             self.data[key] = [self.base_data[key]]
-        self.data['ChainAction/ChainDeph']=[1,2,3]
+        self.data['ChainAction/ChainDeph'] = [1, 2, 3]
         self.data['ChainAction/ChainNodeNumber'] = [500, 750, 1000]
+
     def generate(self):
         output = [SettingFile(self.base_data)]
         for key in self.data.keys():

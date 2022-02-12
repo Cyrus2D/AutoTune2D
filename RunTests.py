@@ -71,7 +71,7 @@ mkdir_p(f"./out/{TESTNAME}/inputs/")
 mkdir_p(f"./out/{TESTNAME}/results/")
 with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
     short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
-possible_settings = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADRESS+SETTING_SUBDIR+SETTING_NAME).generate()
+possible_settings = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADRESS + SETTING_SUBDIR + SETTING_NAME).generate()
 
 for setting in possible_settings:
     setting.write_to_file(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)
