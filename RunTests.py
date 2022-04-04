@@ -12,7 +12,7 @@ from ResultParser import get_result_data
 # TODO use CB instead of start_team
 # TODO make generation more modular
 
-TESTNAME = 'finaltest'
+TESTNAME = 'yushchain'
 SETTING_NAME = 'hel.json'  # name for json file
 TEST_OPPONENT_NAME = '2021_helios'  # used to run with AutoTest
 
@@ -24,7 +24,10 @@ ORIGINAL_BINARY_ADRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-USE_CB = True  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
+USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
+changes_dict=dict()
+changes_dict['ChainAction/ChainDeph'] = [1, 2, 3]
+changes_dict['ChainAction/ChainNodeNumber'] = [500, 750, 1000]
 #######################################################################################
 
 
@@ -71,7 +74,7 @@ mkdir_p(f"./out/{TESTNAME}/inputs/")
 mkdir_p(f"./out/{TESTNAME}/results/")
 with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
     short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
-possible_settings = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADRESS + SETTING_SUBDIR + SETTING_NAME).generate()
+possible_settings = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADRESS + SETTING_SUBDIR + SETTING_NAME,changes_dict).generate()
 
 for setting in possible_settings:
     setting.write_to_file(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)

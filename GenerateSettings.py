@@ -3,13 +3,13 @@ import json_handling
 
 
 class SettingGenerator:
-    def __init__(self, sample_file_address):
+    def __init__(self, sample_file_address, changes_dict):
         self.data = dict()
         self.base_data = json_handling.read_and_flatten_setting(sample_file_address)
         for key in self.base_data:
             self.data[key] = [self.base_data[key]]
-        self.data['ChainAction/ChainDeph'] = [1, 2, 3]
-        self.data['ChainAction/ChainNodeNumber'] = [500, 750, 1000]
+        for key in changes_dict:
+            self.data[key] = changes_dict[key]
 
     def generate(self):
         output = [SettingFile(self.base_data)]
@@ -26,6 +26,9 @@ class SettingGenerator:
 
 
 if __name__ == '__main__':
-    settings = SettingGenerator('/home/arad/robocup/cyrus/team/src/data/settings/hel.json').generate()
+    changes_dict = dict()
+    changes_dict['ChainAction/ChainDeph'] = [1, 2, 3]
+    changes_dict['ChainAction/ChainNodeNumber'] = [500, 750, 1000]
+    settings = SettingGenerator('/home/arad/robocup/cyrus/team/src/data/settings/hel.json',changes_dict).generate()
     for i in range(len(settings)):
         settings[i].write_to_file('./', str(i + 1))
