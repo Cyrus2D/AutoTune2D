@@ -1,10 +1,12 @@
 import errno
+import os
 import shutil
 import subprocess
 import signal
 import sys
+from datetime import datetime
 from os import listdir
-from os.path import isfile, join
+from os.path import isfile, join,isdir
 import csv
 import GenerateSettings
 from GenerateFile import mkdir_p
@@ -22,7 +24,7 @@ ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = False
+GENERATE_SETTINGS = True
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
@@ -103,6 +105,11 @@ def main(generate_settings, json_directory=storage_dir):
             print("Binary Copy Error: % s" % err)
     print("Copied binary successfully! press enter")
     input()
+    if isdir('./out/') and isdir(f'./out/{TESTNAME}/'):
+        timestr = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
+        print(f"Files for {TESTNAME} already exist!\nRenaming previous data to {TESTNAME}_{timestr}")
+        os.rename(f'./out/{TESTNAME}',f'./out/{TESTNAME}_{timestr}')
+        #shutil.rmtree(f'./out/{TESTNAME}')
 
     mkdir_p(f"./out/{TESTNAME}/inputs/")
     mkdir_p(f"./out/{TESTNAME}/results/")
