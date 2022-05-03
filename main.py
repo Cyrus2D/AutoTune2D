@@ -103,8 +103,7 @@ def main(generate_settings, json_directory=storage_dir):
             shutil.copy2(ORIGINAL_BINARY_ADDRESS, TEST_BINARY_ADDRESS)
         else:
             print("Binary Copy Error: % s" % err)
-    print("Copied binary successfully! press enter")
-    input()
+    print("Copied binary successfully!")
     if isdir('./out/') and isdir(f'./out/{TESTNAME}/'):
         timestr = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
         print(f"Files for {TESTNAME} already exist!\nRenaming previous data to {TESTNAME}_{timestr}")
@@ -130,8 +129,6 @@ def main(generate_settings, json_directory=storage_dir):
 
         res = test_setting(settings_files[i], setting_dst_address, i)
         short_data = get_result_data(res)
-        print("SHORT VERSION")
-        print()
         with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
             res_file.write(res)
        # with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
