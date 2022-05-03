@@ -22,7 +22,7 @@ ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = False
+GENERATE_SETTINGS = True
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
@@ -51,14 +51,39 @@ signal.signal(signal.SIGINT, exit_handler)
 
 def SaveSettingsToFile(changes_dict: dict):
     global TESTNAME, storage_dir
-    all_outputs = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADDRESS + SETTING_SUBDIR + SETTING_NAME, changes_dict).generate()
+    all_outputs = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADDRESS + SETTING_SUBDIR + SETTING_NAME,
+                                                    changes_dict).generate()
     for i in range(len(all_outputs)):
         all_outputs[i].write_to_file(storage_dir, str(i) + '.json')
     print("Settings written to destination!")
     return
 
 
-def main(generate_settings):
+def test_setting(json_dir, setting_dst, i):
+    setting_file_name = json_dir.split("/")[-1]
+    cb_flags = []
+    if USE_CB:
+        cb_flags = ['-cb', TEST_BINARY_ADDRESS]
+    shutil.copyfile(json_dir, setting_dst)
+    print(f"Test {setting_file_name} started!")
+    test_call = subprocess.run(
+        ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
+         str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+
+    print(f"Test {setting_file_name} finished!")
+    test_result = subprocess.run(
+        ['./result.sh', '-n', TESTNAME + str(i), "-R", "-N"]
+        , cwd=AUTOTEST_DIR, stdout=subprocess.PIPE
+    )
+
+    print(f"RESULTS FOR TEST {setting_file_name}")
+    print("###################################")
+    res = test_result.stdout.decode('utf-8')
+    print(res)
+    return res
+
+
+def main(generate_settings, json_directory=storage_dir):
     # delete previous test binary
     try:
         shutil.rmtree(TEST_BINARY_ADDRESS)
@@ -87,36 +112,21 @@ def main(generate_settings):
     changes_dict = fill_permutations()
     if generate_settings:
         SaveSettingsToFile(changes_dict)
-    cb_flags = []
-    if USE_CB:
-        cb_flags = ['-cb', TEST_BINARY_ADDRESS]
-    settings_files = sorted([join(storage_dir, f) for f in listdir(storage_dir) if isfile(join(storage_dir, f))])
+
+    settings_files = sorted(
+        [join(json_directory, f) for f in listdir(json_directory) if isfile(join(json_directory, f))])
     for i in range(len(settings_files)):
-        shutil.copyfile(settings_files[i], setting_dst_address)
-        print("PRESS ENTER")
-        input()
-        print(f"Test {i} started!")
-        test_call = subprocess.run(
-            ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
-             str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+        setting_file_name = settings_files[i].split("/")[-1]
 
-        print(f"Test {i} finshed!")
-        test_result = subprocess.run(
-            ['./result.sh', '-n', TESTNAME + str(i), "-R", "-N"]
-            , cwd=AUTOTEST_DIR, stdout=subprocess.PIPE
-        )
-
-        print(f"RESULTS FOR TEST {i}")
-        print("###################################")
-        res = test_result.stdout.decode('utf-8')
-        print(test_result.stdout.decode('utf-8'))
-        print("SHORT VERSION")
+        res = test_setting(settings_files[i], setting_dst_address, i)
         short_data = get_result_data(res)
+        print("SHORT VERSION")
         print()
-        with open(f'./out/{TESTNAME}/results/RESULT_{i}', 'w') as res_file:
+        with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
             res_file.write(res)
         with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
-            short_result.write(f'{i} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
+            short_result.write(
+                f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
 
 main(GENERATE_SETTINGS)

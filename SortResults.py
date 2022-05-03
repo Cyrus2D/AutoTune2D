@@ -17,7 +17,7 @@ elif METRIC == 'avg_points':
     entries = sorted(entries, key=lambda x: x[2], reverse=True)
 elif METRIC == 'winrate':
     entries = sorted(entries, key=lambda x: x[3], reverse=True)
-elif METRIC == 'winrate':
+elif METRIC == 'expected_winrate':
     entries = sorted(entries, key=lambda x: x[4], reverse=True)
 else:
     raise Exception('Invalid metric!')
