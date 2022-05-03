@@ -5,7 +5,7 @@ import signal
 import sys
 from os import listdir
 from os.path import isfile, join
-
+import csv
 import GenerateSettings
 from GenerateFile import mkdir_p
 from ResultParser import get_result_data
@@ -22,14 +22,14 @@ ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = True
+GENERATE_SETTINGS = False
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
 def fill_permutations():
     changes_dict = dict()
-    changes_dict['ChainAction/ChainDeph'] = [1, 2, 3]
-    changes_dict['ChainAction/ChainNodeNumber'] = [500, 750, 1000]
+    changes_dict['ChainAction/ChainDeph'] = [1]
+    changes_dict['ChainAction/ChainNodeNumber'] = [1000]
     return changes_dict
 
 
@@ -107,6 +107,9 @@ def main(generate_settings, json_directory=storage_dir):
     mkdir_p(f"./out/{TESTNAME}/inputs/")
     mkdir_p(f"./out/{TESTNAME}/results/")
     setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)
+    with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Filename', 'Games Played', 'Opponent','Goal Difference','Average Points Difference','Winrate','Expected Winrate'])
     with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
         short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
     changes_dict = fill_permutations()
@@ -128,5 +131,8 @@ def main(generate_settings, json_directory=storage_dir):
             short_result.write(
                 f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
+        with open(f'./out/{TESTNAME}/short_results_csv.csv', 'a', encoding='UTF8') as f:
+            writer = csv.writer(f)
+            writer.writerow([setting_file_name,ROUND_COUNT * GAMES_PER_ROUND,TEST_OPPONENT_NAME]+short_data)
 
 main(GENERATE_SETTINGS)

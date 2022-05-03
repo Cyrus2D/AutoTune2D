@@ -26,4 +26,4 @@ def get_avg_point(text: str):
 
 
 def get_result_data(text: str):
-    return get_goaldiff(text), get_avg_point(text), get_winrate(text), get_expected_winrate(text)
+    return [get_goaldiff(text), get_avg_point(text), get_winrate(text), get_expected_winrate(text)]
