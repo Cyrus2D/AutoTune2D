@@ -109,9 +109,9 @@ def main(generate_settings, json_directory=storage_dir):
     setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)
     with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
-        writer.writerow(['Filename', 'Games Played', 'Opponent','Goal Difference','Average Points Difference','Winrate','Expected Winrate'])
-    with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
-        short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
+        writer.writerow(['Filename', 'Opponent', 'Games Played','Invalid Games','Goal Difference','Goals Scored','Goals Conceded','Point Difference','Left Point','Right Point','Winrate','Expected Winrate'])
+    #with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
+     #   short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
     changes_dict = fill_permutations()
     if generate_settings:
         SaveSettingsToFile(changes_dict)
@@ -127,12 +127,12 @@ def main(generate_settings, json_directory=storage_dir):
         print()
         with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
             res_file.write(res)
-        with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
-            short_result.write(
-                f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
+       # with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
+        #    short_result.write(
+         #       f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
         with open(f'./out/{TESTNAME}/short_results_csv.csv', 'a', encoding='UTF8') as f:
             writer = csv.writer(f)
-            writer.writerow([setting_file_name,ROUND_COUNT * GAMES_PER_ROUND,TEST_OPPONENT_NAME]+short_data)
+            writer.writerow([setting_file_name,TEST_OPPONENT_NAME]+short_data)
 
 main(GENERATE_SETTINGS)
