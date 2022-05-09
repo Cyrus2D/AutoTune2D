@@ -6,7 +6,7 @@ import signal
 import sys
 from datetime import datetime
 from os import listdir
-from os.path import isfile, join,isdir
+from os.path import isfile, join, isdir
 import csv
 import GenerateSettings
 from GenerateFile import mkdir_p
@@ -85,45 +85,58 @@ def test_setting(json_dir, setting_dst, i):
     return res
 
 
-def main(generate_settings, json_directory=storage_dir):
-    # delete previous test binary
-    try:
-        shutil.rmtree(TEST_BINARY_ADDRESS)
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
+def make_output_file_and_directories():
+    mkdir_p(f"./out/{TESTNAME}/inputs/")
+    mkdir_p(f"./out/{TESTNAME}/results/")
+    with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Filename', 'Opponent', 'Games Played', 'Invalid Games', 'Goal Difference', 'Goals Scored',
+                         'Goals Conceded', 'Point Difference', 'Left Point', 'Right Point', 'Winrate',
+                         'Expected Winrate'])
 
+
+def backup_old_result():
+    if isdir('./out/') and isdir(f'./out/{TESTNAME}/'):
+        timestr = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
+        print(f"Files for {TESTNAME} already exist!\nRenaming previous data to {TESTNAME}_{timestr}")
+        os.rename(f'./out/{TESTNAME}', f'./out/{TESTNAME}_{timestr}')
+        # shutil.rmtree(f'./out/{TESTNAME}')
+
+
+def copy_binary():
     # Copy the binary
     # to destination
     try:
         shutil.copytree(ORIGINAL_BINARY_ADDRESS, TEST_BINARY_ADDRESS)
     except OSError as err:
-
         # error caused if the source was not a directory
         if err.errno == errno.ENOTDIR:
             shutil.copy2(ORIGINAL_BINARY_ADDRESS, TEST_BINARY_ADDRESS)
         else:
             print("Binary Copy Error: % s" % err)
     print("Copied binary successfully!")
-    if isdir('./out/') and isdir(f'./out/{TESTNAME}/'):
-        timestr = datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p")
-        print(f"Files for {TESTNAME} already exist!\nRenaming previous data to {TESTNAME}_{timestr}")
-        os.rename(f'./out/{TESTNAME}',f'./out/{TESTNAME}_{timestr}')
-        #shutil.rmtree(f'./out/{TESTNAME}')
 
-    mkdir_p(f"./out/{TESTNAME}/inputs/")
-    mkdir_p(f"./out/{TESTNAME}/results/")
-    setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)
-    with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
-        writer = csv.writer(f)
-        writer.writerow(['Filename', 'Opponent', 'Games Played','Invalid Games','Goal Difference','Goals Scored','Goals Conceded','Point Difference','Left Point','Right Point','Winrate','Expected Winrate'])
-    #with open(f'./out/{TESTNAME}/short_results', 'w') as short_result:
-     #   short_result.write(f"{TEST_OPPONENT_NAME} {ROUND_COUNT * GAMES_PER_ROUND}\n")
-    changes_dict = fill_permutations()
+
+def remove_previous_binary():
+    # delete previous test binary
+    try:
+        shutil.rmtree(TEST_BINARY_ADDRESS)
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+
+
+def main(generate_settings, json_directory=storage_dir):
+    remove_previous_binary()
+    copy_binary()
+    backup_old_result()
+    make_output_file_and_directories()
     if generate_settings:
+        changes_dict = fill_permutations()
         SaveSettingsToFile(changes_dict)
 
     settings_files = sorted(
         [join(json_directory, f) for f in listdir(json_directory) if isfile(join(json_directory, f))])
+    setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)  # address to paste setting file in
     for i in range(len(settings_files)):
         setting_file_name = settings_files[i].split("/")[-1]
 
@@ -131,12 +144,13 @@ def main(generate_settings, json_directory=storage_dir):
         short_data = get_result_data(res)
         with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
             res_file.write(res)
-       # with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
+        # with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
         #    short_result.write(
-         #       f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
+        #       f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
         with open(f'./out/{TESTNAME}/short_results_csv.csv', 'a', encoding='UTF8') as f:
             writer = csv.writer(f)
-            writer.writerow([setting_file_name,TEST_OPPONENT_NAME]+short_data)
+            writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data)
+
 
 main(GENERATE_SETTINGS)
