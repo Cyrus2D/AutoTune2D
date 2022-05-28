@@ -24,13 +24,13 @@ ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = True
+GENERATE_SETTINGS = False
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
 def fill_permutations():
     changes_dict = dict()
-    changes_dict['ChainAction/ChainDeph'] = [1,2]
+    changes_dict['ChainAction/ChainDeph'] = [1]
     changes_dict['ChainAction/ChainNodeNumber'] = [1000]
     return changes_dict
 
@@ -55,6 +55,9 @@ def SaveSettingsToFile(changes_dict: dict):
     global TESTNAME, storage_dir
     all_outputs = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADDRESS + SETTING_SUBDIR + SETTING_NAME,
                                                     changes_dict).generate()
+    values_dict='\n'.join(changes_dict.keys())
+    with open(f'{storage_dir}changed_values', 'w') as f:
+        f.write(values_dict)
     for i in range(len(all_outputs)):
         all_outputs[i].write_to_file(storage_dir, str(i) + '.json')
     print("Settings written to destination!")
@@ -126,14 +129,20 @@ def remove_previous_binary():
 
 
 def main(generate_settings, json_directory=storage_dir):
+    if not generate_settings:
+        with open(f'{storage_dir}changed_values', 'r') as f:
+            changing_variables=f.readlines()
+            print(changing_variables)
     remove_previous_binary()
     copy_binary()
     backup_old_result()
     make_output_file_and_directories()
+    changing_variables=[]
     if generate_settings:
         changes_dict = fill_permutations()
         SaveSettingsToFile(changes_dict)
-
+        changing_variables=list(changes_dict.keys())
+        print(changing_variables)
     settings_files = sorted(
         [join(json_directory, f) for f in listdir(json_directory) if isfile(join(json_directory, f))])
     setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)  # address to paste setting file in
