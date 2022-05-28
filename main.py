@@ -9,6 +9,7 @@ from os import listdir
 from os.path import isfile, join, isdir
 import csv
 import GenerateSettings
+import json_handling
 from GenerateFile import mkdir_p
 from ResultParser import get_result_data
 
@@ -24,13 +25,13 @@ ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
 AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = False
+GENERATE_SETTINGS = True
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
 def fill_permutations():
     changes_dict = dict()
-    changes_dict['ChainAction/ChainDeph'] = [1]
+    changes_dict['ChainAction/ChainDeph'] = [1,2]
     changes_dict['ChainAction/ChainNodeNumber'] = [1000]
     return changes_dict
 
@@ -55,8 +56,8 @@ def SaveSettingsToFile(changes_dict: dict):
     global TESTNAME, storage_dir
     all_outputs = GenerateSettings.SettingGenerator(ORIGINAL_BINARY_ADDRESS + SETTING_SUBDIR + SETTING_NAME,
                                                     changes_dict).generate()
-    values_dict='\n'.join(changes_dict.keys())
-    with open(f'{storage_dir}changed_values', 'w') as f:
+    values_dict = '\n'.join(changes_dict.keys())
+    with open(f'./out/{TESTNAME}/changed_values', 'w') as f:
         f.write(values_dict)
     for i in range(len(all_outputs)):
         all_outputs[i].write_to_file(storage_dir, str(i) + '.json')
@@ -91,11 +92,6 @@ def test_setting(json_dir, setting_dst, i):
 def make_output_file_and_directories():
     mkdir_p(f"./out/{TESTNAME}/inputs/")
     mkdir_p(f"./out/{TESTNAME}/results/")
-    with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
-        writer = csv.writer(f,delimiter=';')
-        writer.writerow(['Filename', 'Opponent', 'Games Played', 'Invalid Games', 'Goal Difference', 'Goals Scored',
-                         'Goals Conceded', 'Point Difference', 'Left Point', 'Right Point', 'Winrate',
-                         'Expected Winrate'])
 
 
 def backup_old_result():
@@ -129,26 +125,36 @@ def remove_previous_binary():
 
 
 def main(generate_settings, json_directory=storage_dir):
+    changing_variables = []
     if not generate_settings:
-        with open(f'{storage_dir}changed_values', 'r') as f:
-            changing_variables=f.readlines()
+        with open(f'./out/{TESTNAME}/changed_values', 'r') as f:
+            changing_variables = f.readlines()
             print(changing_variables)
     remove_previous_binary()
     copy_binary()
     backup_old_result()
     make_output_file_and_directories()
-    changing_variables=[]
+
     if generate_settings:
         changes_dict = fill_permutations()
         SaveSettingsToFile(changes_dict)
-        changing_variables=list(changes_dict.keys())
+        changing_variables = list(changes_dict.keys())
         print(changing_variables)
+    with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(['Filename', 'Opponent', 'Games Played', 'Invalid Games', 'Goal Difference', 'Goals Scored',
+                         'Goals Conceded', 'Point Difference', 'Left Point', 'Right Point', 'Winrate',
+                         'Expected Winrate'] + changing_variables)
+
     settings_files = sorted(
         [join(json_directory, f) for f in listdir(json_directory) if isfile(join(json_directory, f))])
     setting_dst_address = join(TEST_BINARY_ADDRESS + SETTING_SUBDIR, SETTING_NAME)  # address to paste setting file in
     for i in range(len(settings_files)):
         setting_file_name = settings_files[i].split("/")[-1]
-
+        setting = json_handling.read_and_flatten_setting(settings_files[i])
+        values = []
+        for key in changing_variables:
+            values += [setting[key]]
         res = test_setting(settings_files[i], setting_dst_address, i)
         short_data = get_result_data(res)
         with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
@@ -158,8 +164,8 @@ def main(generate_settings, json_directory=storage_dir):
         #       f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
         with open(f'./out/{TESTNAME}/short_results_csv.csv', 'a', encoding='UTF8') as f:
-            writer = csv.writer(f,delimiter=';')
-            writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data)
+            writer = csv.writer(f, delimiter=';')
+            writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data + values)
 
 
 main(GENERATE_SETTINGS)
