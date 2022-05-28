@@ -30,7 +30,7 @@ USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN STAR
 
 def fill_permutations():
     changes_dict = dict()
-    changes_dict['ChainAction/ChainDeph'] = [1]
+    changes_dict['ChainAction/ChainDeph'] = [1,2]
     changes_dict['ChainAction/ChainNodeNumber'] = [1000]
     return changes_dict
 
@@ -89,7 +89,7 @@ def make_output_file_and_directories():
     mkdir_p(f"./out/{TESTNAME}/inputs/")
     mkdir_p(f"./out/{TESTNAME}/results/")
     with open(f'./out/{TESTNAME}/short_results_csv.csv', 'w', encoding='UTF8') as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f,delimiter=';')
         writer.writerow(['Filename', 'Opponent', 'Games Played', 'Invalid Games', 'Goal Difference', 'Goals Scored',
                          'Goals Conceded', 'Point Difference', 'Left Point', 'Right Point', 'Winrate',
                          'Expected Winrate'])
@@ -149,7 +149,7 @@ def main(generate_settings, json_directory=storage_dir):
         #       f'{setting_file_name} {short_data[0]} {short_data[1]} {short_data[2]} {short_data[3]} \n')
 
         with open(f'./out/{TESTNAME}/short_results_csv.csv', 'a', encoding='UTF8') as f:
-            writer = csv.writer(f)
+            writer = csv.writer(f,delimiter=';')
             writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data)
 
 
