@@ -65,8 +65,9 @@ def SaveSettingsToFile(changes_dict: dict):
     return
 
 
-def test_setting(json_dir, setting_dst, i):
+def test_setting(json_dir, setting_dst):
     setting_file_name = json_dir.split("/")[-1]
+    i = setting_file_name.split('.')[0]
     cb_flags = []
     if USE_CB:
         cb_flags = ['-cb', TEST_BINARY_ADDRESS]
@@ -74,11 +75,11 @@ def test_setting(json_dir, setting_dst, i):
     print(f"Test {setting_file_name} started!")
     test_call = subprocess.run(
         ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
-         str(GAMES_PER_ROUND), '-n', TESTNAME + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+         str(GAMES_PER_ROUND), '-n', TESTNAME + '_' + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
 
     print(f"Test {setting_file_name} finished!")
     test_result = subprocess.run(
-        ['./result.sh', '-n', TESTNAME + str(i), "-R", "-N"]
+        ['./result.sh', '-n', TESTNAME + '_' + str(i), "-R", "-N"]
         , cwd=AUTOTEST_DIR, stdout=subprocess.PIPE
     )
 
@@ -155,9 +156,9 @@ def main(generate_settings, json_directory=storage_dir):
         values = []
         for key in changing_variables:
             values += [setting[key]]
-        res = test_setting(settings_files[i], setting_dst_address, i)
+        res = test_setting(settings_files[i], setting_dst_address)
         short_data = get_result_data(res)
-        with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[:-1]}', 'w') as res_file:
+        with open(f'./out/{TESTNAME}/results/RESULT_{setting_file_name.split(".")[0]}', 'w') as res_file:
             res_file.write(res)
         # with open(f'./out/{TESTNAME}/short_results', 'a') as short_result:
         #    short_result.write(
