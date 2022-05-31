@@ -75,11 +75,11 @@ def test_setting(json_dir, setting_dst):
     print(f"Test {setting_file_name} started!")
     test_call = subprocess.run(
         ['./test.sh', '-l', 'test', '-r', TEST_OPPONENT_NAME, '-p', str(PORT), '-ro', str(ROUND_COUNT), '-t',
-         str(GAMES_PER_ROUND), '-n', TESTNAME + '_' + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
+         str(GAMES_PER_ROUND), '-n', TESTNAME + '#' + str(i)] + cb_flags, cwd=AUTOTEST_DIR, stdout=subprocess.PIPE)
 
     print(f"Test {setting_file_name} finished!")
     test_result = subprocess.run(
-        ['./result.sh', '-n', TESTNAME + '_' + str(i), "-R", "-N"]
+        ['./result.sh', '-n', TESTNAME + '#' + str(i), "-R", "-N"]
         , cwd=AUTOTEST_DIR, stdout=subprocess.PIPE
     )
 
