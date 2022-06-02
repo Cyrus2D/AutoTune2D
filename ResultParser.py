@@ -73,8 +73,8 @@ def short_result_to_dict(input: list):
     result = dict()
     result['game_count'] = input[0]
     result['invalid_game_count'] = input[1]
-    result['left_goal'] = input[2]
-    result['right_goal'] = input[3]
+    result['goal_diff'] = input[2]
+    result['left_goal'] = input[3]
     result['right_goal'] = input[4]
     result['avg_point'] = input[5]
     result['left_point'] = input[6]
