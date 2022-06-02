@@ -69,19 +69,23 @@ def get_result_data(text: str):
             get_expected_winrate(text)]
 
 
-def short_result_to_dict(result: list):
+def short_result_to_dict(input: list):
     result = dict()
-    result['game_count'] = result[0]
-    result['invalid_game_count'] = result[1]
-    result['left_goal'] = result[2]
-    result['right_goal'] = result[3]
-    result['right_goal'] = result[4]
-    result['avg_point'] = result[5]
-    result['left_point'] = result[6]
-    result['right_point'] = result[7]
-    result['win_rate'] = result[8]
-    result['expected_win_rate'] = result[9]
+    result['game_count'] = input[0]
+    result['invalid_game_count'] = input[1]
+    result['left_goal'] = input[2]
+    result['right_goal'] = input[3]
+    result['right_goal'] = input[4]
+    result['avg_point'] = input[5]
+    result['left_point'] = input[6]
+    result['right_point'] = input[7]
+    result['win_rate'] = input[8]
+    result['expected_win_rate'] = input[9]
     return result
+
+
+def get_result_dict(text: str):
+    return short_result_to_dict(get_result_data(text))
 
 
 if __name__ == '__main__':
