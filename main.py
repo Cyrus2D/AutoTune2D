@@ -168,5 +168,5 @@ def main(generate_settings, json_directory=storage_dir):
             writer = csv.writer(f, delimiter=';')
             writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data + values)
 
-
-main(GENERATE_SETTINGS)
+if __name__=='__main__':
+    main(GENERATE_SETTINGS)
