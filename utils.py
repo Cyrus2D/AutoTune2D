@@ -18,7 +18,7 @@ def RandomSamples(start_range, end_range, num_samples, cast_function):
 # Example Input: (2,3,0.5)
 # Example outputs: (2,2.5,3)
 def GenerateSpacedSamples(start_range, end_range, sample_distance):
-    return np.arange(start_range, end_range + sample_distance, sample_distance)
+    return np.arange(start_range, end_range + sample_distance, sample_distance).tolist()
 
 
 # Generates equidistant samples from start_range to end_range (both inclusive)
@@ -27,7 +27,7 @@ def GenerateSpacedSamples(start_range, end_range, sample_distance):
 # Example outputs: [2,2.5,3]
 
 def GenerateSpacedSamples_Num(start_range, end_range, num_samples,end_inclusive=True):
-    return np.linspace(start_range, end_range, num_samples, endpoint=end_inclusive)
+    return np.linspace(start_range, end_range, num_samples, endpoint=end_inclusive).tolist()
 
 
 # Generate array with length num_samples
