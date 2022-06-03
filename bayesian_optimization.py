@@ -12,7 +12,7 @@ from ResultParser import get_result_data, short_result_to_dict
 
 space = {'ChainAction/ChainDeph': hp.choice('ChainAction/ChainDeph', [1, 2, 3, 4]),
          'ChainAction/ChainNodeNumber': hp.choice('ChainAction/ChainNodeNumber',
-                                                  utils.GenerateSpacedSamples(500, 1000, 100)),
+                                                  utils.GenerateSpacedSamples(500, 1500, 100)),
          }
 i = 0
 space_sample = hyperopt.pyll.stochastic.sample(space)
@@ -21,6 +21,7 @@ signal.signal(signal.SIGINT, main.exit_handler)
 
 
 def objective(space):
+    global i
     changes_dict = dict()
     for key in space:
         changes_dict[key] = [space[key]]
@@ -33,6 +34,7 @@ def objective(space):
     for key in space_keys:
         values += [space[key]]
     setting_dst_address = join(main.TEST_BINARY_ADDRESS + main.SETTING_SUBDIR, main.SETTING_NAME)
+    print(f"Test values for {i}:{space}")
     res = main.test_setting(join(main.storage_dir, f'{i}.json'), setting_dst_address)
 
     short_data = get_result_data(res)
@@ -43,6 +45,7 @@ def objective(space):
         writer.writerow([f'{i}.json', main.TEST_OPPONENT_NAME] + short_data + values)
     short_data_dict = short_result_to_dict(short_data)
     accuracy = float(short_data_dict['goal_diff'])
+    i += 1
     return {'loss': -accuracy, 'status': STATUS_OK}
 
 
