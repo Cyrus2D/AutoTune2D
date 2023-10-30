@@ -13,19 +13,20 @@ import json_handling
 from GenerateFile import mkdir_p
 from ResultParser import get_result_data
 
-TESTNAME = 'yushchain'
-SETTING_NAME = 'hel.json'  # name for json file
-TEST_OPPONENT_NAME = '2021_helios'  # used to run with AutoTest
-
+TESTNAME = 'testName'
 ROUND_COUNT = 1
-GAMES_PER_ROUND = 5
-PORT = 60000
+GENERATE_SETTINGS = True
 
-ORIGINAL_BINARY_ADDRESS = '/home/arad/robocup/cyrus/team/src'  # copy from this
+SETTING_NAME = 'hel.json'  # name for json file
+TEST_OPPONENT_NAME = 'hel23'  # used to run with AutoTest
+
+GAMES_PER_ROUND = 5
+PORT = 6000
+
+ORIGINAL_BINARY_ADDRESS = '/data1/nader/workspace/robo/cyrus/build/src'  # copy from this
 TEST_BINARY_ADDRESS = '../test'  # to this location
 SETTING_SUBDIR = '/data/settings/'
-AUTOTEST_DIR = '/home/arad/AutoTest2D'
-GENERATE_SETTINGS = True
+AUTOTEST_DIR = '/data1/nader/workspace/robo/AutoTest2D'
 USE_CB = False  # SET THIS TO TRUE IF YOU DONT HAVE TEST TEAM CONFIGURED IN START_TEAM OF AUTOTEST
 
 
@@ -129,11 +130,13 @@ def main(generate_settings, json_directory=storage_dir):
     changing_variables = []
     if not generate_settings:
         with open(f'./out/{TESTNAME}/changed_values', 'r') as f:
-            changing_variables = f.readlines()
+            for l in f.readlines():
+                changing_variables.append(l.strip())
             print(changing_variables)
     remove_previous_binary()
     copy_binary()
-    backup_old_result()
+    if generate_settings:
+        backup_old_result()
     make_output_file_and_directories()
 
     if generate_settings:
@@ -153,6 +156,7 @@ def main(generate_settings, json_directory=storage_dir):
     for i in range(len(settings_files)):
         setting_file_name = settings_files[i].split("/")[-1]
         setting = json_handling.read_and_flatten_setting(settings_files[i])
+        print (setting)
         values = []
         for key in changing_variables:
             values += [setting[key]]
@@ -168,5 +172,5 @@ def main(generate_settings, json_directory=storage_dir):
             writer = csv.writer(f, delimiter=';')
             writer.writerow([setting_file_name, TEST_OPPONENT_NAME] + short_data + values)
 
-if __name__=='__main__':
-    main(GENERATE_SETTINGS)
+
+main(GENERATE_SETTINGS)
