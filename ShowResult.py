@@ -6,15 +6,15 @@ from datetime import datetime
 
 
 def sorter_win_rate(x):
-    return x['Winrate']
+    return float(x['Winrate'])
 
 
 def sorter_expected_win_rate(x):
-    return x['Expected Winrate']
+    return float(x['Expected Winrate'])
 
 
 def sorter_point(x):
-    return x['Left Point']
+    return float(x['Left Point'])
 
 
 def f(sort_function):
@@ -51,8 +51,15 @@ def show_results(test_name, sort_function, show_csv, no_show_options):
     else:
         print(','.join(header))
         for r in results:
-            line = [x.ljust(10) for x in r.values()]
-            print(', '.join(line))
+            #last = list(r.values())[-1]
+            import ast
+            #last = ast.literal_eval(last)
+            #last = [round(float(l), 1) for l in last]
+            #last = [str(l).ljust(4) for l in last]
+            line = [x.ljust(7) for x in list(r.values())[:]]
+            x = ', '.join(line)
+            #x += ','.join(last)
+            print(x)
 
 
 def generate_new_test(test_name, sort_function, new_test_name, selected_number):
@@ -89,8 +96,8 @@ if __name__ == "__main__":
     no_show_options = args.no_show_options
     new_test_name = args.new_test_name
     selected_number = args.selected_number
-
-    if not os.path.exists(f'out/{test_name}/short_results_csv.csv'):
+    print(f'out/{test_name}')
+    if not os.path.exists(f'out/{test_name}'):
         print('The short_results_csv.csv is not exist')
         exit(1)
     if new_test_name:
